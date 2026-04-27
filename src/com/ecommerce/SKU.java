@@ -1,4 +1,3 @@
-package com.ecommerce;
 
 public record SKU(String value) {
     public SKU {

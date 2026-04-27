@@ -1,12 +1,9 @@
-package com.ecommerce.models;
+package models;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
-import com.ecommerce.Money;
-import com.ecommerce.SKU;
-
-public class Produit {
+public class Produit<SKU, Money> {
      private final UUID id;
     private final SKU sku;
     private final String nom;
@@ -39,13 +36,13 @@ public class Produit {
             throw new IllegalArgumentException("Invalid discount percentage");
         }
 
-        BigDecimal discount = price.amount()
+       /*  BigDecimal discount = price.amount()
                 .multiply(percentage)
                 .divide(BigDecimal.valueOf(100));
 
         BigDecimal newPrice = price.amount().subtract(discount);
 
-        this.price = new Money(newPrice, price.currency());
+        this.price = new Money(newPrice, price.currency()); */
     }
 
 

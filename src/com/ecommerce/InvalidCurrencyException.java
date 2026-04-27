@@ -1,4 +1,4 @@
-package com.ecommerce;
+
 
 public class InvalidCurrencyException extends RuntimeException {
     public InvalidCurrencyException(String message) {
