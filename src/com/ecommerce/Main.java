@@ -13,6 +13,9 @@ import java.util.stream.Collectors;
 import interfaces.Validation;
 import interfaces.Validator;
 import models.User;
+import repositories.UserRepository;
+import models.Address;
+import models.Employee;
 import models.Item;
 import models.Order;
 import models.Produit;
@@ -104,8 +107,9 @@ public class Main {
         fruits.stream().filter(fruit -> fruit.startsWith("a")).forEach(fruit -> System.out.println("Fruit: " + fruit));
 
         System.out.println("##################################");
-        List<User> users1 = List.of(new User("Alice", "alice@example.com", "password123"),
-                new User("Bob", "bob@example.com", "password456"));
+        List<User> users1 = List.of(
+                new User("Alice", "alice@example.com", "password123", new Address("Rue de Paris")),
+                new User("Bob", "bob@example.com", "password456", null));
 
         users1.stream().filter(User::isActive).forEach(user -> System.out.println("Active user: " + user.getNom()));
 
@@ -121,10 +125,10 @@ public class Main {
 
         System.out.println("##################################");
         List<Transaction> transactions = List.of(
-                new Transaction("USD", 100),
-                new Transaction("EUR", 200),
-                new Transaction("USD", 150),
-                new Transaction("JPY", 300));
+                new Transaction("USD", 100, "STANDARD"),
+                new Transaction("EUR", 200, "STANDARD"),
+                new Transaction("USD", 150, "PREMIUM"),
+                new Transaction("JPY", 300, "PREMIUM"));
         Map<String, List<Transaction>> byCurrency = transactions.stream()
                 .collect(Collectors.groupingBy(Transaction::getCurrency));
         System.out.println("Transactions by currency: " + byCurrency);
@@ -177,6 +181,73 @@ public class Main {
 
         System.out.println("Tous les articles cumulés :");
         allItems.forEach(System.out::println);
+        System.out.println("##################################");
+        System.out.println("##################################");
+        Address maRue = new Address("10 Rue des Développeurs");
+        User user = new User("Jean Dupont", "jean.dupont@email.com", "securePass123", maRue);
+        String street = Optional.ofNullable(user)
+                .map(User::getAddress)
+                .map(Address::getStreet)
+                .orElse("Rue inconnue");
+        System.out.println("Rue de l'utilisateur : " + street);
+        System.out.println("##################################");
+        System.out.println("##################################");
+        Predicate<Transaction> isPositives = t -> t.getAmount() > 0;
+
+        Predicate<Transaction> isXof = t -> t.getAmount() > 0 && "XOF".equals(t.getCurrency());
+
+        Predicate<Transaction> isPremium = t -> "PREMIUM".equals(t.getUserType());
+        Predicate<Transaction> complexValidator = isPositives
+                .and(isXof)
+                .or(isPremium);
+        Transaction t1 = new Transaction("XOF", 100, "STANDARD");
+        Transaction t2 = new Transaction("USD", 150, "PREMIUM");
+        System.out.println("Transaction 1 valid? " + complexValidator.test(t1));
+        System.out.println("Transaction 2 valid? " + complexValidator.test(t2));
+        System.out.println("##################################");
+        System.out.println("##################################");
+
+        List<String> ids = List.of("1", "2", "3");
+
+        UserRepository repository = new UserRepository() {
+            @Override
+            public Optional<User> findById(String id) {
+                return Optional.of(new User("User " + id, id + "@test.com", "password123", null));
+            }
+        };
+        List<User> existingUsers = ids.stream()
+                .map(repository::findById)
+                .flatMap(Optional::stream)
+                .collect(Collectors.toList());
+
+        System.out.println("Utilisateurs existants : " + existingUsers);
+        System.out.println("##################################");
+        System.out.println("##################################");
+
+        // 1. Initialisation des données de test
+        List<String> csvLines = Arrays.asList(
+                "Alice;30;2500.0",
+                "Bob;inconnu;3000.0",
+                "Charlie;45;invalid",
+                "Damien;25;1800.0",
+                "ErreurLigne"
+        );
+        List<Employee> employees = csvLines.stream()
+                .map(line -> {
+                    try {
+                        String[] parts = line.split(";");
+                        String nom = parts[0];
+                        int age = Integer.parseInt(parts[1]);
+                        double salaire = Double.parseDouble(parts[2]);
+                        return Optional.of(new Employee(nom, age, salaire));
+                    } catch (Exception e) {
+                        return Optional.<Employee>empty();
+                    }
+                })
+                .flatMap(Optional::stream)
+                .collect(Collectors.toList());
+
+        System.out.println("Employés valides : " + employees);
 
     }
 }
