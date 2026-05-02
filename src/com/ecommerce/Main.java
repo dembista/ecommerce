@@ -224,7 +224,7 @@ public class Main {
         System.out.println("##################################");
         System.out.println("##################################");
 
-        // 1. Initialisation des données de test
+        
         List<String> csvLines = Arrays.asList(
                 "Alice;30;2500.0",
                 "Bob;inconnu;3000.0",
