@@ -6,8 +6,10 @@ public class User {
     private  String password;
     private boolean isActive;
     private  boolean isAdmin;
+    private  Address address;
 
-    public User(String nom, String email, String password) {
+
+    public User(String nom, String email, String password, Address address) {
         if (nom == null || nom.trim().isEmpty()) {
             throw new IllegalArgumentException("Nom ne doit pas être null ou vide");
         }
@@ -18,6 +20,7 @@ public class User {
             throw new IllegalArgumentException("Password doit contenir au moins 6 caractères");
         }
         this.nom = nom;
+        this.address = address;
         this.email = email;
         this.password = password;
         this.isActive = true;
@@ -41,6 +44,21 @@ public class User {
 
     public void deactivate() {
         isActive = false;
+    }
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
+    }
+
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
+    public void setAdmin(boolean admin) {
+        isAdmin = admin;
     }
 
 }
