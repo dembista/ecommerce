@@ -38,4 +38,9 @@ private final UUID id;
     public Money getBalance() {
         return balance;
     }
+
+    public PhoneNumber getOwnerPhoneNumber() {
+        return ownerPhoneNumber;
+    }
+    
 }
